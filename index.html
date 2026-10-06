@@ -5,19 +5,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Marshmallow Pals: Cute Match 3</title>
 <meta name="description" content="Marshmallow Pals is a cute match-3 puzzle game. Match fluffy animal friends, earn stars and travel to a new world every 100 levels.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐰</text></svg>">
+<meta property="og:title" content="Marshmallow Pals: Cute Match 3">
+<meta property="og:description" content="Match fluffy animal friends across colorful worlds.">
+<meta property="og:image" content="images/board.webp">
+<link rel="icon" href="images/pal-kitty.webp" type="image/webp">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
     --sky: #d7efff;
-    --meadow: #8fd17a;
-    --meadow-deep: #5fae55;
+    --meadow: #8fc77a;
+    --meadow-deep: #4f9a4a;
     --pillow: #ffd9e3;
     --butter: #fff2c2;
     --cocoa: #4a2e2a;
-    --cocoa-soft: #7a5a52;
+    --cocoa-soft: #6e4f48;
     --white: #ffffff;
     --display: "Baloo 2", "Trebuchet MS", system-ui, sans-serif;
     --body: "Nunito", "Segoe UI", system-ui, sans-serif;
@@ -31,35 +34,32 @@
     font-size: 1.0625rem;
     line-height: 1.6;
     color: var(--cocoa);
-    background: var(--sky);
-    padding-top: env(safe-area-inset-top, 0px);
+    background: var(--meadow);
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
-  img, svg { max-width: 100%; }
+  img { max-width: 100%; display: block; }
   a { color: var(--cocoa); }
-  a:focus-visible, .cta:focus-visible { outline: 3px solid var(--cocoa); outline-offset: 3px; border-radius: 12px; }
+  a:focus-visible { outline: 3px solid var(--cocoa); outline-offset: 3px; border-radius: 12px; }
 
-  /* Hero: sky above, rolling meadow below */
+  /* Hero over the real Green Meadow background */
   .hero {
-    position: relative;
     text-align: center;
-    padding: 3.5rem 1.25rem 0;
-    overflow: hidden;
+    padding: calc(3rem + env(safe-area-inset-top, 0px)) 1.25rem 3rem;
+    background: var(--sky) url("images/hero-meadow.webp") center bottom / cover no-repeat;
   }
   .title {
     font-family: var(--display);
     font-weight: 800;
-    font-size: clamp(3rem, 11vw, 6.5rem);
+    font-size: clamp(2.4rem, 11vw, 6.5rem);
     line-height: 0.9;
     margin: 0 auto;
     color: var(--white);
     letter-spacing: 0.01em;
-    /* layered puffy edge, like a squishy marshmallow */
     text-shadow:
       0 2px 0 var(--pillow),
       0 4px 0 #f6b9c9,
       0 6px 0 #ec9fb4,
-      0 10px 18px rgba(74, 46, 42, 0.18);
+      0 10px 18px rgba(74, 46, 42, 0.2);
     -webkit-text-stroke: 2px var(--cocoa);
     paint-order: stroke fill;
   }
@@ -68,12 +68,16 @@
     max-width: 30ch;
     margin: 1.4rem auto 0;
     font-size: 1.2rem;
-    font-weight: 600;
-    color: var(--cocoa-soft);
+    font-weight: 700;
+    color: var(--cocoa);
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 18px;
+    padding: 0.4rem 1rem;
+    display: inline-block;
   }
   .cta {
-    display: inline-block;
-    margin-top: 1.6rem;
+    display: table;
+    margin: 1.4rem auto 0;
     padding: 0.85rem 1.6rem;
     font-family: var(--display);
     font-weight: 800;
@@ -85,89 +89,124 @@
     box-shadow: 0 5px 0 var(--cocoa);
     text-decoration: none;
   }
-  .cta[aria-disabled="true"] { cursor: default; }
-
-  /* Mini board */
-  .board {
-    position: relative;
-    z-index: 2;
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 8px;
-    width: min(420px, 100%);
+  .screenshot {
+    width: min(380px, 100%);
     margin: 2.5rem auto 0;
-    padding: 12px;
-    background: rgba(255, 255, 255, 0.55);
-    border: 3px solid var(--cocoa);
-    border-radius: 26px;
-  }
-  .tile {
-    aspect-ratio: 1;
+    padding: 10px;
     background: var(--white);
-    border-radius: 16px;
-    display: grid;
-    place-items: center;
-    box-shadow: inset 0 -4px 0 rgba(74, 46, 42, 0.08);
+    border: 3px solid var(--cocoa);
+    border-radius: 28px;
+    box-shadow: 0 8px 0 rgba(74, 46, 42, 0.25);
   }
-  .tile svg { width: 82%; height: 82%; }
-  .pop svg { animation: pop 2.4s ease-in-out 0.8s both; }
-  .pop:nth-child(8) svg { animation-delay: 0.9s; }
-  .pop:nth-child(9) svg { animation-delay: 1s; }
-  @keyframes pop {
-    0% { transform: scale(1); opacity: 1; }
-    18% { transform: scale(1.22); opacity: 1; }
-    30% { transform: scale(0); opacity: 0; }
-    62% { transform: translateY(-120%) scale(1); opacity: 0; }
-    82% { transform: translateY(6%) scale(1); opacity: 1; }
-    100% { transform: translateY(0) scale(1); opacity: 1; }
+  .screenshot img { border-radius: 18px; width: 100%; height: auto; }
+
+  /* Pals lineup */
+  .pals {
+    text-align: center;
+    padding: 3rem 1.25rem 1rem;
+  }
+  .pals h2, .worlds h2, .play h2 {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(1.8rem, 5vw, 2.4rem);
+    line-height: 1.1;
+    margin: 0 0 0.5rem;
+  }
+  .pals p { margin: 0 auto 1.5rem; max-width: 46ch; color: var(--cocoa); }
+  .pal-row {
+    list-style: none;
+    margin: 0 auto;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem 1rem;
+    max-width: 720px;
+  }
+  .pal-row li { width: 96px; font-weight: 700; font-size: 0.95rem; }
+  .pal-row img { width: 84px; height: 84px; object-fit: contain; margin: 0 auto 0.3rem; }
+  .pal-row li:nth-child(odd) img { animation: hop 0.9s ease-out both; }
+  .pal-row li:nth-child(even) img { animation: hop 0.9s ease-out 0.15s both; }
+  @keyframes hop {
+    0% { transform: translateY(0); }
+    35% { transform: translateY(-18px) scale(1.05, 0.95); }
+    60% { transform: translateY(0) scale(1.08, 0.92); }
+    100% { transform: translateY(0) scale(1); }
   }
   @media (prefers-reduced-motion: reduce) {
-    .pop svg { animation: none; }
-  }
-  .meadow {
-    position: relative;
-    margin-top: -70px;
-    height: 150px;
-    background: var(--meadow);
-    border-radius: 50% 50% 0 0 / 70px 70px 0 0;
-    z-index: 1;
+    .pal-row img { animation: none !important; }
   }
 
-  /* Body content on the meadow */
-  main {
-    background: var(--meadow);
-    padding: 1rem 1.25rem 4rem;
+  /* Worlds */
+  .worlds {
+    padding: 3rem 1.25rem;
   }
-  .about {
-    max-width: 640px;
+  .worlds-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    align-items: center;
+  }
+  @media (min-width: 760px) {
+    .worlds-inner { grid-template-columns: 280px 1fr; }
+  }
+  .map-shot {
+    width: min(280px, 80%);
+    margin: 0 auto;
+    border: 3px solid var(--cocoa);
+    border-radius: 26px;
+    overflow: hidden;
+    background: var(--white);
+  }
+  .map-shot img { width: 100%; height: auto; }
+  .worlds p { margin: 0 0 1.25rem; max-width: 52ch; }
+  .world-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.9rem;
+  }
+  .world-grid li {
+    background: var(--white);
+    border: 3px solid var(--cocoa);
+    border-radius: 20px;
+    overflow: hidden;
+  }
+  .world-grid img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+  .world-grid span { display: block; padding: 0.45rem 0.75rem; font-family: var(--display); font-weight: 800; font-size: 1.05rem; }
+  .coming { margin-top: 1rem !important; font-size: 0.98rem; color: var(--cocoa-soft); }
+
+  /* How it plays */
+  .play {
+    padding: 0 1.25rem 4rem;
+  }
+  .play-card {
+    max-width: 680px;
     margin: 0 auto;
     background: var(--white);
     border: 3px solid var(--cocoa);
     border-radius: 28px;
     padding: 2rem 1.75rem;
   }
-  .about h2 {
-    font-family: var(--display);
-    font-weight: 800;
-    font-size: 1.9rem;
-    line-height: 1.1;
-    margin: 0 0 0.75rem;
-  }
-  .about p { margin: 0 0 1rem; max-width: 60ch; }
+  .play-card > p { margin: 0 0 1rem; max-width: 60ch; }
   .features {
     list-style: none;
     margin: 1.25rem 0 0;
     padding: 0;
     display: grid;
-    gap: 1rem;
+    gap: 1.1rem;
   }
   .features li {
     display: grid;
-    grid-template-columns: 44px 1fr;
+    grid-template-columns: 52px 1fr;
     gap: 0.9rem;
     align-items: start;
   }
-  .features svg { width: 44px; height: 44px; }
+  .features img { width: 52px; height: 52px; object-fit: contain; }
   .features strong { display: block; font-family: var(--display); font-size: 1.2rem; line-height: 1.2; }
 
   footer {
@@ -183,97 +222,67 @@
 </head>
 <body>
 
-<!-- Original pal designs, reused across the page -->
-<svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <defs>
-    <g id="face">
-      <circle cx="38" cy="56" r="5" fill="#4a2e2a"/>
-      <circle cx="62" cy="56" r="5" fill="#4a2e2a"/>
-      <circle cx="39.5" cy="54.5" r="1.6" fill="#fff"/>
-      <circle cx="63.5" cy="54.5" r="1.6" fill="#fff"/>
-      <ellipse cx="29" cy="66" rx="6" ry="3.5" fill="#ff9fb5" opacity=".8"/>
-      <ellipse cx="71" cy="66" rx="6" ry="3.5" fill="#ff9fb5" opacity=".8"/>
-      <path d="M45 65 q5 5 10 0" stroke="#4a2e2a" stroke-width="3" fill="none" stroke-linecap="round"/>
-    </g>
-    <symbol id="bunny" viewBox="0 0 100 100">
-      <ellipse cx="35" cy="24" rx="9" ry="20" fill="#ffc2d2" stroke="#4a2e2a" stroke-width="3"/>
-      <ellipse cx="65" cy="24" rx="9" ry="20" fill="#ffc2d2" stroke="#4a2e2a" stroke-width="3"/>
-      <circle cx="50" cy="60" r="30" fill="#ffd9e3" stroke="#4a2e2a" stroke-width="3"/>
-      <use href="#face"/>
-    </symbol>
-    <symbol id="bear" viewBox="0 0 100 100">
-      <circle cx="27" cy="34" r="11" fill="#e8b98a" stroke="#4a2e2a" stroke-width="3"/>
-      <circle cx="73" cy="34" r="11" fill="#e8b98a" stroke="#4a2e2a" stroke-width="3"/>
-      <circle cx="50" cy="60" r="30" fill="#f2cba3" stroke="#4a2e2a" stroke-width="3"/>
-      <use href="#face"/>
-    </symbol>
-    <symbol id="kitty" viewBox="0 0 100 100">
-      <path d="M24 46 L28 18 L46 33 Z" fill="#ffd27a" stroke="#4a2e2a" stroke-width="3" stroke-linejoin="round"/>
-      <path d="M76 46 L72 18 L54 33 Z" fill="#ffd27a" stroke="#4a2e2a" stroke-width="3" stroke-linejoin="round"/>
-      <circle cx="50" cy="60" r="30" fill="#ffe09e" stroke="#4a2e2a" stroke-width="3"/>
-      <use href="#face"/>
-    </symbol>
-    <symbol id="frog" viewBox="0 0 100 100">
-      <circle cx="33" cy="36" r="12" fill="#b6e6a3" stroke="#4a2e2a" stroke-width="3"/>
-      <circle cx="67" cy="36" r="12" fill="#b6e6a3" stroke="#4a2e2a" stroke-width="3"/>
-      <circle cx="50" cy="62" r="28" fill="#b6e6a3" stroke="#4a2e2a" stroke-width="3"/>
-      <use href="#face"/>
-    </symbol>
-    <symbol id="chick" viewBox="0 0 100 100">
-      <path d="M50 30 q-6 -14 2 -18 q2 8 6 4" fill="#ffe56b" stroke="#4a2e2a" stroke-width="3" stroke-linejoin="round"/>
-      <circle cx="50" cy="60" r="30" fill="#fff08a" stroke="#4a2e2a" stroke-width="3"/>
-      <use href="#face"/>
-    </symbol>
-  </defs>
-</svg>
-
 <header class="hero">
   <h1 class="title"><span>Marshmallow</span><span>Pals</span></h1>
   <p class="tagline">A cozy match-3 puzzle game full of fluffy animal friends.</p>
-  <a class="cta" href="#about" aria-disabled="true">Coming soon to Google Play</a>
-
-  <div class="board" role="img" aria-label="A game board of cute animal pieces, with three bunnies in a row being matched">
-    <div class="tile"><svg><use href="#bear"/></svg></div>
-    <div class="tile"><svg><use href="#chick"/></svg></div>
-    <div class="tile"><svg><use href="#frog"/></svg></div>
-    <div class="tile"><svg><use href="#kitty"/></svg></div>
-    <div class="tile"><svg><use href="#bear"/></svg></div>
-    <div class="tile"><svg><use href="#kitty"/></svg></div>
-    <div class="tile pop"><svg><use href="#bunny"/></svg></div>
-    <div class="tile pop"><svg><use href="#bunny"/></svg></div>
-    <div class="tile pop"><svg><use href="#bunny"/></svg></div>
-    <div class="tile"><svg><use href="#chick"/></svg></div>
-    <div class="tile"><svg><use href="#frog"/></svg></div>
-    <div class="tile"><svg><use href="#bear"/></svg></div>
-    <div class="tile"><svg><use href="#chick"/></svg></div>
-    <div class="tile"><svg><use href="#frog"/></svg></div>
-    <div class="tile"><svg><use href="#kitty"/></svg></div>
-  </div>
-  <div class="meadow" aria-hidden="true"></div>
+  <a class="cta" href="#pals">Coming soon to Google Play</a>
+  <figure class="screenshot">
+    <img src="images/board.webp" width="640" height="638" alt="A Marshmallow Pals game board filled with frogs, chicks, penguins, piggies and octopuses">
+  </figure>
 </header>
 
-<main id="about">
-  <section class="about">
-    <h2>Swap, match and make friends</h2>
-    <p>Swap two neighboring pals to line up three or more of the same kind. Reach the target score before you run out of moves, and finish each level with as many stars as you can.</p>
-    <ul class="features">
-      <li>
-        <svg aria-hidden="true"><use href="#chick"/></svg>
-        <div><strong>A new world every 100 levels</strong>Travel across a map of colorful places, each with its own scenery.</div>
-      </li>
-      <li>
-        <svg aria-hidden="true"><use href="#kitty"/></svg>
-        <div><strong>Earn up to three stars</strong>Beat your best score on every level and come back to collect the stars you missed.</div>
-      </li>
-      <li>
-        <svg aria-hidden="true"><use href="#bunny"/></svg>
-        <div><strong>A party when you win</strong>Leftover moves turn into special pieces that clear the board for bonus points.</div>
-      </li>
-      <li>
-        <svg aria-hidden="true"><use href="#bear"/></svg>
-        <div><strong>Made for one hand</strong>Plays in portrait on your phone, so you can match on the go.</div>
-      </li>
+<main>
+  <section class="pals" id="pals">
+    <h2>Meet the pals</h2>
+    <p>Swap two neighbors to line up three or more of the same pal and watch them pop.</p>
+    <ul class="pal-row">
+      <li><img src="images/pal-kitty.webp" alt="">Kitty</li>
+      <li><img src="images/pal-frog.webp" alt="">Frog</li>
+      <li><img src="images/pal-penguin.webp" alt="">Penguin</li>
+      <li><img src="images/pal-piggy.webp" alt="">Piggy</li>
+      <li><img src="images/pal-octopus.webp" alt="">Octopus</li>
+      <li><img src="images/pal-chick.webp" alt="">Chick</li>
     </ul>
+  </section>
+
+  <section class="worlds">
+    <div class="worlds-inner">
+      <div class="map-shot">
+        <img src="images/map.webp" width="540" height="1005" alt="The level map, a dotted path winding through the Green Meadow">
+      </div>
+      <div>
+        <h2>A new world every 100 levels</h2>
+        <p>Follow the path across the map and unlock a brand new place to play every hundred levels.</p>
+        <ul class="world-grid">
+          <li><img src="images/world-pradera.webp" alt="" loading="lazy"><span>Green Meadow</span></li>
+          <li><img src="images/world-bosque.webp" alt="" loading="lazy"><span>Mushroom Forest</span></li>
+          <li><img src="images/world-playa.webp" alt="" loading="lazy"><span>Sunny Beach</span></li>
+          <li><img src="images/world-selva.webp" alt="" loading="lazy"><span>Tropical Jungle</span></li>
+        </ul>
+        <p class="coming">Still on the way: Cactus Desert, Snowy Mountain and Cloud Kingdom.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="play">
+    <div class="play-card">
+      <h2>How it plays</h2>
+      <p>Reach the target score before you run out of moves. The better you do, the more stars you take home.</p>
+      <ul class="features">
+        <li>
+          <img src="images/pal-chick.webp" alt="">
+          <div><strong>Earn up to three stars</strong>Beat your best score on every level and come back for the stars you missed.</div>
+        </li>
+        <li>
+          <img src="images/pal-rainbow-kitty.webp" alt="">
+          <div><strong>Animal Rush when you win</strong>Your leftover moves turn into special pieces that clear the board for bonus points.</div>
+        </li>
+        <li>
+          <img src="images/pal-penguin.webp" alt="">
+          <div><strong>Made for one hand</strong>Plays in portrait on your phone, so you can match on the go.</div>
+        </li>
+      </ul>
+    </div>
   </section>
 </main>
 
