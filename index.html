@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Marshmallow Pals: Cute Match 3</title>
+<meta name="description" content="Marshmallow Pals is a cute match-3 puzzle game. Match fluffy animal friends, earn stars and travel to a new world every 100 levels.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐰</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky: #d7efff;
+    --meadow: #8fd17a;
+    --meadow-deep: #5fae55;
+    --pillow: #ffd9e3;
+    --butter: #fff2c2;
+    --cocoa: #4a2e2a;
+    --cocoa-soft: #7a5a52;
+    --white: #ffffff;
+    --display: "Baloo 2", "Trebuchet MS", system-ui, sans-serif;
+    --body: "Nunito", "Segoe UI", system-ui, sans-serif;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0;
+    font-family: var(--body);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: var(--cocoa);
+    background: var(--sky);
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  img, svg { max-width: 100%; }
+  a { color: var(--cocoa); }
+  a:focus-visible, .cta:focus-visible { outline: 3px solid var(--cocoa); outline-offset: 3px; border-radius: 12px; }
+
+  /* Hero: sky above, rolling meadow below */
+  .hero {
+    position: relative;
+    text-align: center;
+    padding: 3.5rem 1.25rem 0;
+    overflow: hidden;
+  }
+  .title {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(3rem, 11vw, 6.5rem);
+    line-height: 0.9;
+    margin: 0 auto;
+    color: var(--white);
+    letter-spacing: 0.01em;
+    /* layered puffy edge, like a squishy marshmallow */
+    text-shadow:
+      0 2px 0 var(--pillow),
+      0 4px 0 #f6b9c9,
+      0 6px 0 #ec9fb4,
+      0 10px 18px rgba(74, 46, 42, 0.18);
+    -webkit-text-stroke: 2px var(--cocoa);
+    paint-order: stroke fill;
+  }
+  .title span { display: block; }
+  .tagline {
+    max-width: 30ch;
+    margin: 1.4rem auto 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--cocoa-soft);
+  }
+  .cta {
+    display: inline-block;
+    margin-top: 1.6rem;
+    padding: 0.85rem 1.6rem;
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: 1.15rem;
+    color: var(--cocoa);
+    background: var(--butter);
+    border: 3px solid var(--cocoa);
+    border-radius: 999px;
+    box-shadow: 0 5px 0 var(--cocoa);
+    text-decoration: none;
+  }
+  .cta[aria-disabled="true"] { cursor: default; }
+
+  /* Mini board */
+  .board {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    width: min(420px, 100%);
+    margin: 2.5rem auto 0;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.55);
+    border: 3px solid var(--cocoa);
+    border-radius: 26px;
+  }
+  .tile {
+    aspect-ratio: 1;
+    background: var(--white);
+    border-radius: 16px;
+    display: grid;
+    place-items: center;
+    box-shadow: inset 0 -4px 0 rgba(74, 46, 42, 0.08);
+  }
+  .tile svg { width: 82%; height: 82%; }
+  .pop svg { animation: pop 2.4s ease-in-out 0.8s both; }
+  .pop:nth-child(8) svg { animation-delay: 0.9s; }
+  .pop:nth-child(9) svg { animation-delay: 1s; }
+  @keyframes pop {
+    0% { transform: scale(1); opacity: 1; }
+    18% { transform: scale(1.22); opacity: 1; }
+    30% { transform: scale(0); opacity: 0; }
+    62% { transform: translateY(-120%) scale(1); opacity: 0; }
+    82% { transform: translateY(6%) scale(1); opacity: 1; }
+    100% { transform: translateY(0) scale(1); opacity: 1; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pop svg { animation: none; }
+  }
+  .meadow {
+    position: relative;
+    margin-top: -70px;
+    height: 150px;
+    background: var(--meadow);
+    border-radius: 50% 50% 0 0 / 70px 70px 0 0;
+    z-index: 1;
+  }
+
+  /* Body content on the meadow */
+  main {
+    background: var(--meadow);
+    padding: 1rem 1.25rem 4rem;
+  }
+  .about {
+    max-width: 640px;
+    margin: 0 auto;
+    background: var(--white);
+    border: 3px solid var(--cocoa);
+    border-radius: 28px;
+    padding: 2rem 1.75rem;
+  }
+  .about h2 {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: 1.9rem;
+    line-height: 1.1;
+    margin: 0 0 0.75rem;
+  }
+  .about p { margin: 0 0 1rem; max-width: 60ch; }
+  .features {
+    list-style: none;
+    margin: 1.25rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 1rem;
+  }
+  .features li {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: 0.9rem;
+    align-items: start;
+  }
+  .features svg { width: 44px; height: 44px; }
+  .features strong { display: block; font-family: var(--display); font-size: 1.2rem; line-height: 1.2; }
+
+  footer {
+    background: var(--meadow-deep);
+    color: var(--white);
+    text-align: center;
+    padding: 1.75rem 1.25rem 2rem;
+    font-size: 0.95rem;
+  }
+  footer a { color: var(--white); font-weight: 700; }
+  footer p { margin: 0.3rem 0; }
+</style>
+</head>
+<body>
+
+<!-- Original pal designs, reused across the page -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <g id="face">
+      <circle cx="38" cy="56" r="5" fill="#4a2e2a"/>
+      <circle cx="62" cy="56" r="5" fill="#4a2e2a"/>
+      <circle cx="39.5" cy="54.5" r="1.6" fill="#fff"/>
+      <circle cx="63.5" cy="54.5" r="1.6" fill="#fff"/>
+      <ellipse cx="29" cy="66" rx="6" ry="3.5" fill="#ff9fb5" opacity=".8"/>
+      <ellipse cx="71" cy="66" rx="6" ry="3.5" fill="#ff9fb5" opacity=".8"/>
+      <path d="M45 65 q5 5 10 0" stroke="#4a2e2a" stroke-width="3" fill="none" stroke-linecap="round"/>
+    </g>
+    <symbol id="bunny" viewBox="0 0 100 100">
+      <ellipse cx="35" cy="24" rx="9" ry="20" fill="#ffc2d2" stroke="#4a2e2a" stroke-width="3"/>
+      <ellipse cx="65" cy="24" rx="9" ry="20" fill="#ffc2d2" stroke="#4a2e2a" stroke-width="3"/>
+      <circle cx="50" cy="60" r="30" fill="#ffd9e3" stroke="#4a2e2a" stroke-width="3"/>
+      <use href="#face"/>
+    </symbol>
+    <symbol id="bear" viewBox="0 0 100 100">
+      <circle cx="27" cy="34" r="11" fill="#e8b98a" stroke="#4a2e2a" stroke-width="3"/>
+      <circle cx="73" cy="34" r="11" fill="#e8b98a" stroke="#4a2e2a" stroke-width="3"/>
+      <circle cx="50" cy="60" r="30" fill="#f2cba3" stroke="#4a2e2a" stroke-width="3"/>
+      <use href="#face"/>
+    </symbol>
+    <symbol id="kitty" viewBox="0 0 100 100">
+      <path d="M24 46 L28 18 L46 33 Z" fill="#ffd27a" stroke="#4a2e2a" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M76 46 L72 18 L54 33 Z" fill="#ffd27a" stroke="#4a2e2a" stroke-width="3" stroke-linejoin="round"/>
+      <circle cx="50" cy="60" r="30" fill="#ffe09e" stroke="#4a2e2a" stroke-width="3"/>
+      <use href="#face"/>
+    </symbol>
+    <symbol id="frog" viewBox="0 0 100 100">
+      <circle cx="33" cy="36" r="12" fill="#b6e6a3" stroke="#4a2e2a" stroke-width="3"/>
+      <circle cx="67" cy="36" r="12" fill="#b6e6a3" stroke="#4a2e2a" stroke-width="3"/>
+      <circle cx="50" cy="62" r="28" fill="#b6e6a3" stroke="#4a2e2a" stroke-width="3"/>
+      <use href="#face"/>
+    </symbol>
+    <symbol id="chick" viewBox="0 0 100 100">
+      <path d="M50 30 q-6 -14 2 -18 q2 8 6 4" fill="#ffe56b" stroke="#4a2e2a" stroke-width="3" stroke-linejoin="round"/>
+      <circle cx="50" cy="60" r="30" fill="#fff08a" stroke="#4a2e2a" stroke-width="3"/>
+      <use href="#face"/>
+    </symbol>
+  </defs>
+</svg>
+
+<header class="hero">
+  <h1 class="title"><span>Marshmallow</span><span>Pals</span></h1>
+  <p class="tagline">A cozy match-3 puzzle game full of fluffy animal friends.</p>
+  <a class="cta" href="#about" aria-disabled="true">Coming soon to Google Play</a>
+
+  <div class="board" role="img" aria-label="A game board of cute animal pieces, with three bunnies in a row being matched">
+    <div class="tile"><svg><use href="#bear"/></svg></div>
+    <div class="tile"><svg><use href="#chick"/></svg></div>
+    <div class="tile"><svg><use href="#frog"/></svg></div>
+    <div class="tile"><svg><use href="#kitty"/></svg></div>
+    <div class="tile"><svg><use href="#bear"/></svg></div>
+    <div class="tile"><svg><use href="#kitty"/></svg></div>
+    <div class="tile pop"><svg><use href="#bunny"/></svg></div>
+    <div class="tile pop"><svg><use href="#bunny"/></svg></div>
+    <div class="tile pop"><svg><use href="#bunny"/></svg></div>
+    <div class="tile"><svg><use href="#chick"/></svg></div>
+    <div class="tile"><svg><use href="#frog"/></svg></div>
+    <div class="tile"><svg><use href="#bear"/></svg></div>
+    <div class="tile"><svg><use href="#chick"/></svg></div>
+    <div class="tile"><svg><use href="#frog"/></svg></div>
+    <div class="tile"><svg><use href="#kitty"/></svg></div>
+  </div>
+  <div class="meadow" aria-hidden="true"></div>
+</header>
+
+<main id="about">
+  <section class="about">
+    <h2>Swap, match and make friends</h2>
+    <p>Swap two neighboring pals to line up three or more of the same kind. Reach the target score before you run out of moves, and finish each level with as many stars as you can.</p>
+    <ul class="features">
+      <li>
+        <svg aria-hidden="true"><use href="#chick"/></svg>
+        <div><strong>A new world every 100 levels</strong>Travel across a map of colorful places, each with its own scenery.</div>
+      </li>
+      <li>
+        <svg aria-hidden="true"><use href="#kitty"/></svg>
+        <div><strong>Earn up to three stars</strong>Beat your best score on every level and come back to collect the stars you missed.</div>
+      </li>
+      <li>
+        <svg aria-hidden="true"><use href="#bunny"/></svg>
+        <div><strong>A party when you win</strong>Leftover moves turn into special pieces that clear the board for bonus points.</div>
+      </li>
+      <li>
+        <svg aria-hidden="true"><use href="#bear"/></svg>
+        <div><strong>Made for one hand</strong>Plays in portrait on your phone, so you can match on the go.</div>
+      </li>
+    </ul>
+  </section>
+</main>
+
+<footer>
+  <p><a href="privacy.html">Privacy Policy</a></p>
+  <p>Questions? Write to <a href="mailto:hello@marshmallowpals.app">hello@marshmallowpals.app</a></p>
+  <p>&copy; 2026 Marshmallow Pals</p>
+</footer>
+
+</body>
+</html>
